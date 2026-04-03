@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      */
@@ -17,9 +16,8 @@ return new class extends Migration
             $table->softDeletesDatetime();
             $table->string('name', 128)->index();
             $table->text('description')->nullable();
-            $table->string('imag_path');
+            $table->string('image_path');
             $table->foreignId('album_id')->constrained()->cascadeOnDelete();
-
         });
     }
 
