@@ -61,13 +61,13 @@ Questo database gestisce:
 
 ### 🔗 album_category (Pivot)
 
-| Field       | Type      | Description                        |
-|------------|----------|------------------------------------|
-| id         | BIGINT   | Primary Key                        |
-| album_id   | BIGINT   | FK → albums                        |
-| category_id| BIGINT   | FK → album_categories              |
-| created_at | TIMESTAMP| Created                            |
-| updated_at | TIMESTAMP| Updated                            |
+| Field               | Type      | Description                        |
+|--------------------|----------|------------------------------------|
+| id                 | BIGINT   | Primary Key                        |
+| album_id           | BIGINT   | FK → albums                        |
+| album_category_id  | BIGINT   | FK → album_categories              |
+| created_at         | TIMESTAMP| Created                            |
+| updated_at         | TIMESTAMP| Updated                            |
 
 ---
 
@@ -86,12 +86,83 @@ Questo database gestisce:
 
 ---
 
-## 🔗 Relationships
+## 🔗 Eloquent Relationships
 
-- User → Albums (**1:N**)
-- User → Categories (**1:N**)
-- Album → Photos (**1:N**)
-- Album ↔ Categories (**N:M** via pivot)
+### Relationship Diagram
+
+```
+┌─────────────┐         hasMany          ┌───────────────┐
+│    User     │─────────────────────────▶│     Album     │
+│             │─────────────────────────▶│               │
+│             │      hasMany             │  - user()     │
+│             │                          │  - photos()   │
+└─────────────┘                          │  - categories()│
+       │                                 └───────────────┘
+       │                                          ▲
+       │ hasMany                                  │ belongsTo
+       ▼                                          │
+┌─────────────┐                                   │
+│AlbumCategory│◀──────────────────────────────────┘
+│             │      belongsToMany (via pivot)
+│  - user()   │         albums()
+│  - albums() │
+└─────────────┘
+       ▲
+       │ belongsTo
+┌─────────────┐
+│ CategoryAlbum│  (pivot table: album_category)
+│             │
+│  - category()│
+│  - album()   │
+└─────────────┘
+       │
+       │ hasMany
+       ▼
+┌─────────────┐
+│    Photo    │
+│             │
+│  - album()  │
+└─────────────┘
+```
+
+### Relationship Details
+
+| Model | Relation | Type | Foreign Key | Description |
+|-------|----------|------|-------------|-------------|
+| **User** | `albums()` | hasMany | `user_id` on albums | A user has many albums |
+| **User** | `albumCategories()` | hasMany | `user_id` on album_categories | A user has many categories |
+| **Album** | `user()` | belongsTo | `user_id` | An album belongs to one user |
+| **Album** | `photos()` | hasMany | `album_id` on photos | An album has many photos |
+| **Album** | `categories()` | belongsToMany | via `album_category` pivot | Many-to-many with AlbumCategory |
+| **AlbumCategory** | `user()` | belongsTo | `user_id` | A category belongs to one user |
+| **AlbumCategory** | `albums()` | belongsToMany | via `album_category` pivot | Many-to-many with Album |
+| **Photo** | `album()` | belongsTo | `album_id` | A photo belongs to one album |
+| **CategoryAlbum** | `category()` | belongsTo | `album_category_id` | Pivot belongs to category |
+| **CategoryAlbum** | `album()` | belongsTo | `album_id` | Pivot belongs to album |
+
+### Quick Reference
+
+```php
+// User relationships
+$user->albums;           // Collection of Album models
+$user->albumCategories;  // Collection of AlbumCategory models
+
+// Album relationships
+$album->user;            // User model
+$album->photos;          // Collection of Photo models
+$album->categories;      // Collection of AlbumCategory models (via pivot)
+
+// AlbumCategory relationships
+$category->user;         // User model
+$category->albums;       // Collection of Album models (via pivot)
+
+// Photo relationships
+$photo->album;           // Album model
+
+// Pivot relationships
+$pivot->category;        // AlbumCategory model
+$pivot->album;           // Album model
+```
 
 ---
 
@@ -143,7 +214,7 @@ erDiagram
     ALBUM_CATEGORY {
         BIGINT id PK
         BIGINT album_id FK
-        BIGINT category_id FK
+        BIGINT album_category_id FK
         TIMESTAMP created_at
         TIMESTAMP updated_at
     }
@@ -158,3 +229,4 @@ erDiagram
         TIMESTAMP updated_at
         TIMESTAMP deleted_at
     }
+```
