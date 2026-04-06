@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Album;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 
@@ -14,14 +15,10 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        User::factory()->count(20)
-            ->hasAlbumCategories(3, function (array $attributes, User $user) {
-                return [
-                    'user_id' => $user->id,
-
-
-                ];
-            })->hasPhotos(20)
+        User::factory()->count(20)->hasAlbumCategories(10)
+            ->has(
+                Album::factory(20)->hasPhotos(50)
+            )
             ->create();
     }
 }

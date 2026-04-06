@@ -22,5 +22,4 @@ class AlbumCategory extends Model
     {
         return $this->belongsToMany(Album::class, 'album_category', 'album_id', 'album_category_id');
     }
-
 }

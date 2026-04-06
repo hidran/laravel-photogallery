@@ -21,7 +21,7 @@ class PhotoFactory extends Factory
         return [
             'name' => fake()->text(64),
             'album_id' => Album::query()->inRandomOrder()->first(['id']),
-            'image_path' => fake()->imageUrl()
+            'image_path' => fake()->imageUrl(),
         ];
     }
 }

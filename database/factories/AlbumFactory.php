@@ -20,7 +20,7 @@ class AlbumFactory extends Factory
     {
         return [
             'album_name' => fake()->text(64),
-            'user_id' => User::factory()
+            'user_id' => User::factory(),
         ];
     }
 }

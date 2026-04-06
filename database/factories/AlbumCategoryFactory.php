@@ -23,16 +23,15 @@ class AlbumCategoryFactory extends Factory
         'dogs',
         'children',
         'women',
-        'birds'
+        'birds',
     ];
-
 
     public function definition(): array
     {
         return [
             'category_name' => fake()->text(64),
             'description' => fake()->text(),
-            'user_id' => User::factory()
+            'user_id' => User::factory(),
         ];
     }
 }
